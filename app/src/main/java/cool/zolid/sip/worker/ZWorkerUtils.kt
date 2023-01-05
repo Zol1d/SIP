@@ -20,6 +20,7 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLHandshakeException
 
 class ZWorkerUtils(private val ctx: Context) {
     private val mgr = WorkManager.getInstance(ctx)
@@ -137,7 +138,8 @@ class ZWorkerUtils(private val ctx: Context) {
                             UnknownHostException::class,
                             SocketTimeoutException::class,
                             SocketException::class,
-                            ConnectException::class
+                            ConnectException::class,
+                            SSLHandshakeException::class
                         ).contains(e::class)
                     ) {
                         // Network error
