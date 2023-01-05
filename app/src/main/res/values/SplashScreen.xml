@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="splashScreenTheme" parent="Theme.SIP">
+        <item name="android:windowBackground">@drawable/sstheme</item>
+    </style>
+</resources>

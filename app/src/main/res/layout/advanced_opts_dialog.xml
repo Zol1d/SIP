@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="4">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_weight="3"
+        android:orientation="vertical">
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/compareToggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="32dp"
+            android:text="Pārbaudīt vai paziņojums jau bijis sūtīts" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/generalToggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="32dp"
+            android:text="Vispārīgās izmaiņas" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/clearNotifsToggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="32dp"
+            android:text="Tīrīt šodienas paziņojumus" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/historyPaneToggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="32dp"
+            android:text="Paziņojumu vēsture" />
+
+        <TextView
+            android:id="@+id/tutTxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nospiediet un turiet uz iestatījuma teksta, lai rādītu paskaidrojumu" />
+
+        <Button
+            android:id="@+id/clear_all"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tīrīt visu atmiņu un iestatījumus"
+            android:textSize="12dp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="25dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/intTxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Intervāls:"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="15dp" />
+
+        <android.widget.NumberPicker
+            android:id="@+id/intPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/green_border"
+            android:divider="@color/dark_green" />
+
+        <TextView
+            android:id="@+id/hrTxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="stundas"
+            android:textAlignment="center"
+            android:textSize="15dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

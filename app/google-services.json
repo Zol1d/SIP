@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "594250523247",
+    "project_id": "sip2-6559c",
+    "storage_bucket": "sip2-6559c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:594250523247:android:01ecce5beb16e70635239a",
+        "android_client_info": {
+          "package_name": "cool.zolid.sip"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "594250523247-m9hkt1haglptp5fgno2qpn96672hkirh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADsF1JNrz7O9oyEklUoxlr59fKtz3mi6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "594250523247-m9hkt1haglptp5fgno2qpn96672hkirh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

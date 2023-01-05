@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="backupClasses">
+        <item>5.A</item>
+        <item>5.B</item>
+        <item>5.C</item>
+        <item>5.D</item>
+        <item>5.E</item>
+        <item>6.A</item>
+        <item>6.B</item>
+        <item>6.C</item>
+        <item>6.D</item>
+        <item>6.E</item>
+        <item>7.A</item>
+        <item>7.B</item>
+        <item>7.C</item>
+        <item>7.D</item>
+        <item>8.A</item>
+        <item>8.B</item>
+        <item>8.C</item>
+        <item>8.D</item>
+        <item>9.A</item>
+        <item>9.B</item>
+        <item>9.C</item>
+        <item>9.D</item>
+        <item>10.Inz</item>
+        <item>10.VUD</item>
+        <item>11.DA</item>
+        <item>11.DIT</item>
+        <item>11.UZ</item>
+        <item>11.VISP</item>
+        <item>12.DAS</item>
+        <item>12.DIT</item>
+        <item>12.UZ</item>
+        <item>12.VM</item>
+    </string-array>
+</resources>

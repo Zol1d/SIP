@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="clazz_btn_table" type="id" />
+    <item name="history_pane" type="id" />
+    <item name="history_details_fragment" type="id" />
+    <item name="slider_button" type="id" />
+    <item name="fragment_content_view" type="id" />
+    <item name="fragment_layout" type="id" />
+</resources>
