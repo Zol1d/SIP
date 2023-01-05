@@ -23,7 +23,7 @@ android {
             applicationId "cool.zolid.sip"
             minSdk 24
             targetSdk 32
-            versionName "1.7.2"
+            versionName "1.7.3"
         }
     } else {
         throw new Exception("Could not read version.properties!")
