@@ -1,9 +1,12 @@
 package cool.zolid.sip.worker
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.crashlytics.ktx.crashlytics
@@ -38,10 +41,7 @@ fun ContainsDateResult.getFormattedDate(): String {
 
 
 data class ContainsDateResult(
-    val any: Boolean,
-    val today: Boolean,
-    val tmrw: Boolean,
-    val monday: Boolean
+    val any: Boolean, val today: Boolean, val tmrw: Boolean, val monday: Boolean
 )
 
 private fun calculateUntilMonday(): Calendar {
@@ -59,23 +59,24 @@ fun containsDate(html: String): ContainsDateResult {
     )
     val monresult = html.contains(lvDateFmt.format(calculateUntilMonday().time))
     return ContainsDateResult(
-        todayresult || tmrwresult || monresult,
-        todayresult,
-        tmrwresult,
-        monresult
+        todayresult || tmrwresult || monresult, todayresult, tmrwresult, monresult
     )
 }
 
 data class ZNotification(
-    val date: String,
-    val main: String,
-    val containsDate: ContainsDateResult
+    val date: String, val main: String, val containsDate: ContainsDateResult
 )
 
 fun notify(ctx: Context, date: String, main: String, containsDate: ContainsDateResult) =
     notify(ctx, ZNotification(date, main, containsDate))
 
 fun notify(ctx: Context, data: ZNotification, sticky: Boolean = false) {
+    if (ActivityCompat.checkSelfPermission(
+            ctx, Manifest.permission.POST_NOTIFICATIONS
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        return
+    }
     val (date, main, containsDate) = data
     val zdata = ZData(ctx)
     val notifId = date.split('.')[0].toIntOrNull() ?: nextInt()
@@ -85,31 +86,21 @@ fun notify(ctx: Context, data: ZNotification, sticky: Boolean = false) {
         priority = NotificationCompat.PRIORITY_MAX
         setColorized(true)
         setLights(
-            ctx.getZColor(R.color.dark_green),
-            1000,
-            500
+            ctx.getZColor(R.color.dark_green), 1000, 500
         )
         setContentTitle("${if (containsDate.today) "Šodienas" else if (containsDate.tmrw) "Rītdienas" else if (containsDate.monday) "Pirmdienas" else return} izmaiņas ($date)")
         setContentText(main)
-        setStyle(
-            NotificationCompat.BigTextStyle()
-                .bigText(
-                    if (main.length >= 300) main.take(
-                        main.take(300).indexOfLast { it == '\n' } - 3)
-                        .plus("...\n(Nospiediet lai atvērtu visas izmaiņas)") else main
-                )
-        )
+        setStyle(NotificationCompat.BigTextStyle()
+            .bigText(if (main.length >= 300) main.take(main.take(300)
+                .indexOfLast { it == '\n' } - 3)
+                .plus("...\n(Nospiediet lai atvērtu visas izmaiņas)") else main))
         setContentIntent(
             PendingIntent.getActivity(
-                ctx,
-                notifId,
-                Intent(ctx, MainActivity::class.java).apply {
+                ctx, notifId, Intent(ctx, MainActivity::class.java).apply {
                     putExtra(
-                        "openHistoryDate",
-                        date
+                        "openHistoryDate", date
                     )
-                },
-                PendingIntent.FLAG_IMMUTABLE
+                }, PendingIntent.FLAG_IMMUTABLE
             )
         )
         if (sticky) {
@@ -118,23 +109,18 @@ fun notify(ctx: Context, data: ZNotification, sticky: Boolean = false) {
                 android.R.drawable.ic_menu_close_clear_cancel,
                 "Sapratu",
                 PendingIntent.getBroadcast(
-                    ctx,
-                    notifId,
-                    Intent(ctx, ButtonReceiver::class.java).apply {
+                    ctx, notifId, Intent(ctx, ButtonReceiver::class.java).apply {
                         putExtra(
-                            "id",
-                            notifId
+                            "id", notifId
                         )
-                    },
-                    PendingIntent.FLAG_IMMUTABLE
+                    }, PendingIntent.FLAG_IMMUTABLE
                 )
             )
             zdata.savedNotifs = zdata.savedNotifs.apply { add(data) }
         }
     }
-    //Notification id as date implementation to not send changes for the same date in different notifs+
-    NotificationManagerCompat.from(ctx)
-        .notify(notifId, notif.build())
+    //Notification id as date implementation to not send changes for the same date in different notifs
+    NotificationManagerCompat.from(ctx).notify(notifId, notif.build())
     if (!sticky) {
         Thread.sleep(2000L)
         notify(ctx, data, true)
@@ -142,38 +128,34 @@ fun notify(ctx: Context, data: ZNotification, sticky: Boolean = false) {
 }
 
 fun errorNotify(
-    ctx: Context,
-    title: String? = null,
-    text: String? = null,
-    bigText: String? = null
+    ctx: Context, title: String? = null, text: String? = null, bigText: String? = null
 ) {
+    if (ActivityCompat.checkSelfPermission(
+            ctx, Manifest.permission.POST_NOTIFICATIONS
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        return
+    }
     val notif = NotificationCompat.Builder(ctx, "changes").apply {
         setSmallIcon(R.drawable.ic_notif)
         color = ctx.getZColor(android.R.color.holo_red_dark)
         setColorized(true)
         setLights(
-            ctx.getZColor(android.R.color.holo_red_dark),
-            1000,
-            500
+            ctx.getZColor(android.R.color.holo_red_dark), 1000, 500
         )
         priority = NotificationCompat.PRIORITY_MAX
         setContentIntent(
             PendingIntent.getActivity(
-                ctx,
-                0,
-                Intent(ctx, MainActivity::class.java),
-                PendingIntent.FLAG_IMMUTABLE
+                ctx, 0, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE
             )
         )
         setContentTitle(title ?: "Kļūda")
         setContentText(text ?: "Ir notikusi kļūda pārbaudot stundu izmaiņas")
         setStyle(
-            NotificationCompat.BigTextStyle()
-                .bigText(
-                    bigText
-                        ?: text
-                        ?: "Ir notikusi kļūda pārbaudot stundu izmaiņas,\npar šo notikumu tika ziņots"
-                )
+            NotificationCompat.BigTextStyle().bigText(
+                bigText ?: text
+                ?: "Ir notikusi kļūda pārbaudot stundu izmaiņas,\npar šo notikumu tika ziņots"
+            )
         )
     }
     NotificationManagerCompat.from(ctx).notify(500, notif.build())
@@ -200,8 +182,7 @@ fun scrapeChanges(clazzArray: List<String>): MutableMap<String, MutableMap<Strin
                 date = containsResult.getFormattedDate()
                 dateChanges["Vispārīgi"] =
                     hc.replace(Regex("<strong>.*</strong>").find(hc)!!.value, "")
-                        .replace(dashRegex, "")
-                        .removePrefix(".")
+                        .replace(dashRegex, "").removePrefix(".")
                         .replaceFirstChar { it.uppercaseChar() }
                 continue
             }
@@ -224,8 +205,8 @@ fun scrapeChanges(clazzArray: List<String>): MutableMap<String, MutableMap<Strin
                     if ("Vispārīgi" in dateChanges) {
                         dateChanges["Vispārīgi"] += (" " + hc.trim)
                     } else {
-                        // No clue wtf happened to the format if this triggers
-                        Firebase.crashlytics.recordException(Throwable("NoClueWtfHappenedToTheFormat"))
+                        // No clue what happened to the format if this triggers
+                        Firebase.crashlytics.recordException(Throwable("FormatError"))
                     }
                 }
             }

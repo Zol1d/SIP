@@ -1,11 +1,13 @@
 package cool.zolid.sip.ui
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -30,13 +33,11 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import cool.zolid.sip.BuildConfig
 import cool.zolid.sip.R
-import cool.zolid.sip.SIPEventBusIndex
 import cool.zolid.sip.data.AllClassesChangeEvent
 import cool.zolid.sip.data.ZData
 import cool.zolid.sip.ui.slider.SliderPagerAdapter
 import cool.zolid.sip.worker.ZWorkerUtils
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.EventBusException
 import java.util.*
 
 
@@ -67,11 +68,6 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n", "InflateParams", "ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        try {
-            EventBus.builder().addIndex(SIPEventBusIndex()).installDefaultEventBus()
-        } catch (e: EventBusException) {
-        } catch (e: NoSuchMethodException) {
-        }
 
         remoteConfig = Firebase.remoteConfig
         workMgr = ZWorkerUtils(applicationContext)
@@ -140,9 +136,7 @@ class MainActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                "changes",
-                "Stundu izmaiņas",
-                NotificationManager.IMPORTANCE_HIGH
+                "changes", "Stundu izmaiņas", NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
                 lightColor = resources.getZColor(R.color.dark_green)
@@ -174,12 +168,10 @@ class MainActivity : AppCompatActivity() {
             it.isUserInputEnabled = false
             it.currentItem = when {
                 intent.getBooleanExtra(
-                    "forceMainScreenLoad",
-                    false
+                    "forceMainScreenLoad", false
                 ) -> 0
                 intent.getBooleanExtra(
-                    "forceHistoryScreenLoad",
-                    false
+                    "forceHistoryScreenLoad", false
                 ) || intent.getStringExtra(
                     "openHistoryDate"
                 ) != null -> 1
@@ -210,6 +202,15 @@ class MainActivity : AppCompatActivity() {
                 Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
                 Uri.parse("package:$packageName")
             )
-        )
+        ) else if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(
+                    this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 0
+                )
+            }
+        }
     }
 }
