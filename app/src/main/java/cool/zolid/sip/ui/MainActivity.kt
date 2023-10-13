@@ -154,11 +154,10 @@ class MainActivity : AppCompatActivity() {
             "SIP versija ${BuildConfig.VERSION_NAME}"
 
         val cal = Calendar.getInstance()
-        activView.findViewById<TextView>(R.id.creditText).text = "Kodējis Matīss no ${
-            (if (cal.get(Calendar.DAY_OF_YEAR) > 244) cal.get(Calendar.YEAR) + 1 else cal.get(
-                Calendar.YEAR
-            )) - 2015
-        }.D"
+        val schoolyear = ((if (cal.get(Calendar.DAY_OF_YEAR) > 244) cal.get(Calendar.YEAR) + 1 else cal.get(
+            Calendar.YEAR
+        )) - 2015)
+        activView.findViewById<TextView>(R.id.creditText).text = if (schoolyear > 9) "Kodējis Matīss Lazdiņš Rīgas 64. Vidusskolai (7. klase, 2021)" else "Kodējis Matīss no ${schoolyear}.D"
         activView.findViewById<ViewPager2>(R.id.pager).let {
             it.adapter = SliderPagerAdapter(
                 this, intent.getStringExtra(
