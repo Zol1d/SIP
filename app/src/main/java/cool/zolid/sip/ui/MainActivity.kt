@@ -27,6 +27,7 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
@@ -106,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     if (task.isSuccessful) {
                         val res = task.result.children.map {
-                            it.getValue<String>()!!
+                            it.getValue(object : GenericTypeIndicator<String>() {})!!
                         }
                         zdata.allClassList = res
                         zdata.currentClassSet =

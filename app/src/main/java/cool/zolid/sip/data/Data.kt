@@ -83,7 +83,8 @@ class Data(ctx: Context) {
     var lastSliderPageMain by ZVar.Bool(true)
     var showAdvancedOpts by ZVar.FirebaseBool()
     var allClassList by ZVar.GsonObject(
-        object : TypeToken<List<String>>() {},
+        object : TypeToken<List
+        <String>>() {},
         ctx.resources.getStringArray(R.array.backupClasses).toList(),
     )
     var savedNotifs by ZVar.GsonObject(
