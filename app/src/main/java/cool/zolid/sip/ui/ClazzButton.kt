@@ -10,9 +10,9 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import com.google.android.material.button.MaterialButton
 import cool.zolid.sip.R
-import cool.zolid.sip.data.ZData
+import cool.zolid.sip.data.Data
 import cool.zolid.sip.ui.slider.SliderButton
-import cool.zolid.sip.worker.ZWorkerUtils
+import cool.zolid.sip.worker.WorkerUtils
 
 @SuppressLint("ViewConstructor", "SetTextI18n")
 class ClazzButton(
@@ -44,15 +44,15 @@ class ClazzButton(
             marginStart = 10
         }
         setPadding(15, 10, 15, 10)
-        toggled = isWorkScheduled && ZData(context).currentClassSet.contains(text)
+        toggled = isWorkScheduled && Data(context).currentClassSet.contains(text)
         setColor(this)
     }
 
     override fun onClick(v: View?) {
         toggled = !toggled
         setColor(v as MaterialButton)
-        val zdata = ZData(context)
-        val workMgr = ZWorkerUtils(context)
+        val zdata = Data(context)
+        val workMgr = WorkerUtils(context)
         val chooseTxt =
             (context as Activity).findViewById<TextView>(R.id.chooseTxt)
         val oldccs = zdata.currentClassSet

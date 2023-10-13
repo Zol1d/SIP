@@ -13,12 +13,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.switchmaterial.SwitchMaterial
 import cool.zolid.sip.R
-import cool.zolid.sip.data.ZData
+import cool.zolid.sip.data.Data
 import cool.zolid.sip.ui.slider.SliderButton
-import cool.zolid.sip.worker.ZWorkerUtils
+import cool.zolid.sip.worker.WorkerUtils
 
 @SuppressLint("SetTextI18n")
-fun MainActivity.renderAdvancedOpts(zdata: ZData, workMgr: ZWorkerUtils) {
+fun MainActivity.renderAdvancedOpts(zdata: Data, workMgr: WorkerUtils) {
     class AdvancedOptsDialog : DialogFragment() {
         private var lastToast: Toast? = null
         private fun SwitchMaterial.setExplanation(msg: String) = setOnLongClickListener {
@@ -79,7 +79,7 @@ fun MainActivity.renderAdvancedOpts(zdata: ZData, workMgr: ZWorkerUtils) {
                 value = zdata.checkInterval
                 setOnValueChangedListener { _, _, newVal ->
                     zdata.checkInterval = newVal
-                    ZWorkerUtils(applicationContext).enqueueWork()
+                    WorkerUtils(applicationContext).enqueueWork()
                 }
             }
 

@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import cool.zolid.sip.R
 import cool.zolid.sip.data.HistoryChangeEvent
-import cool.zolid.sip.data.ZData
-import cool.zolid.sip.ui.getZColor
+import cool.zolid.sip.data.Data
+import cool.zolid.sip.ui.getRColor
 import cool.zolid.sip.worker.ContainsDateResult
 import cool.zolid.sip.worker.containsDate
 import org.greenrobot.eventbus.EventBus
@@ -43,7 +43,7 @@ class HistoryPaneAdapter(
     }
 
     init {
-        submitList(ZData(fa).History().getAll())
+        submitList(Data(fa).History().getAll())
         EventBus.getDefault().register(this)
     }
 
@@ -88,7 +88,7 @@ class HistoryPaneAdapter(
         val currViewHolder = (fa.findViewById<RecyclerView>(R.id.history_pane)
             .findViewHolderForAdapterPosition(position) as ItemViewHolder)
         currViewHolder.date.setTextColor(
-            fa.getZColor(
+            fa.getRColor(
                 R.color.yellow
             )
         )
@@ -110,7 +110,7 @@ class HistoryPaneAdapter(
         }
         if (item.date == initDate) {
             holder.date.setTextColor(
-                fa.getZColor(
+                fa.getRColor(
                     R.color.yellow
                 )
             )

@@ -11,7 +11,7 @@ import org.json.JSONObject
 import kotlin.reflect.KProperty
 
 
-class ZPrefVars(ctx: Context) {
+class PrefVars(ctx: Context) {
     companion object {
         val JSONObject.toMap
             get(): Map<String, *> = keys().asSequence().associateWith {

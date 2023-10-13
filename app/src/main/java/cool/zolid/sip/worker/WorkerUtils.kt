@@ -10,7 +10,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import cool.zolid.sip.BuildConfig
-import cool.zolid.sip.data.ZData
+import cool.zolid.sip.data.Data
 import cool.zolid.sip.notifs.ButtonReceiver.Companion.removeNotification
 import org.jsoup.HttpStatusException
 import java.io.IOException
@@ -22,7 +22,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLHandshakeException
 
-class ZWorkerUtils(private val ctx: Context) {
+class WorkerUtils(private val ctx: Context) {
     private val mgr = WorkManager.getInstance(ctx)
 
     fun isWorkScheduled(): Boolean {
@@ -46,7 +46,7 @@ class ZWorkerUtils(private val ctx: Context) {
             Worker(appContext, workerParams) {
             fun successWithoutNotif(): Result {
                 Firebase.analytics.logEvent("success", null)
-                ZData(applicationContext).errored = false
+                Data(applicationContext).errored = false
                 return Result.success()
             }
 
@@ -77,36 +77,27 @@ class ZWorkerUtils(private val ctx: Context) {
                     Firebase.analytics.logEvent("batteryCheckFailedInWorker", null)
                     return Result.failure()
                 }
-                val zdata = ZData(applicationContext)
+                val data = Data(applicationContext)
 
-                if (zdata.clearTodaysNotifs && Calendar.getInstance()
+                if (data.clearTodaysNotifs && Calendar.getInstance()
                         .get(Calendar.HOUR_OF_DAY) > Firebase.remoteConfig.getLong("clearTodaysNotifsHour")
                 ) {
-                    zdata.savedNotifs.iterator().forEach {
+                    data.savedNotifs.iterator().forEach {
                         if (it.date == lvDateFmt.format(Calendar.getInstance().time)) {
                             removeNotification(applicationContext, it.date)
                         }
                     }
                 }
                 try {
-                    val rawchanges = scrapeChanges(
-                        zdata.allClassList
-                    )
+                    val rawchanges = scrapeChanges(data.allClassList)
                     if (rawchanges.isEmpty()) return successWithoutNotif()
-                    val ccs = zdata.currentClassSet.map { it.lowercase() }
-                    val history = zdata.History()
+                    val ccs = data.currentClassSet
+                    val history = data.History()
                     for ((date, rawdatechanges) in rawchanges) {
                         val general = rawdatechanges["Vispārīgi"]
-                        val changes =
-                            rawdatechanges.filterKeys {
-                                ccs.contains(
-                                    Regex("\\d{1,2}\\.?\\w{1,3}").find(
-                                        it
-                                    )?.value
-                                )
-                            }
+                        val changes = rawdatechanges.filterKeys { it in ccs }
                         if (changes.isEmpty()) continue
-                        if (zdata.compareChanges) {
+                        if (data.compareChanges) {
                             val histdata = history.getWhen(date)
                             if (!(histdata == null || changes.any { histdata[it.key] != it.value })) continue
                             history.make(date, rawdatechanges)
@@ -116,7 +107,7 @@ class ZWorkerUtils(private val ctx: Context) {
                             notifTxt += it.key + ": " + it.value.trim()
                                 .replaceFirstChar { it.uppercaseChar() } + "\n"
                         }
-                        if (!general.isNullOrBlank() && zdata.generalChanges) notifTxt += "Vispārīgi: $general"
+                        if (!general.isNullOrBlank() && data.generalChanges) notifTxt += "Vispārīgi: $general"
                         notifTxt = notifTxt.trim().trimEnd('\n')
                         val containsDate = containsDate(date)
                         Firebase.analytics.logEvent("successWithNotif", null)
@@ -127,7 +118,7 @@ class ZWorkerUtils(private val ctx: Context) {
                             containsDate
                         )
                     }
-                    zdata.errored = false
+                    data.errored = false
                     return Result.success()
                 } catch (e: HttpStatusException) {
                     Firebase.analytics.logEvent("websiteError", null)
@@ -148,8 +139,8 @@ class ZWorkerUtils(private val ctx: Context) {
                         return Result.retry()
                     }
                     val crashlytics = Firebase.crashlytics
-                    zdata.setFirebaseKeys()
-                    crashlytics.log(zdata.History().toString())
+                    data.setFirebaseKeys()
+                    crashlytics.log(data.History().toString())
                     Firebase.messaging.token.addOnCompleteListener {
                         if (it.isSuccessful) crashlytics.setCustomKey("FCM token", it.result)
                         crashlytics.recordException(e)
@@ -157,19 +148,19 @@ class ZWorkerUtils(private val ctx: Context) {
                     if (BuildConfig.DEBUG) {
                         e.printStackTrace()
                         errorNotify(applicationContext, e.toString())
-                    } else if (!zdata.errored) errorNotify(applicationContext)
-                    zdata.errored = true
+                    } else if (!data.errored) errorNotify(applicationContext)
+                    data.errored = true
                     return Result.failure()
                 }
             }
         }
 
-        val zdata = ZData(ctx)
+        val data = Data(ctx)
         mgr.enqueueUniquePeriodicWork(
             "hourlyChanges",
-            ExistingPeriodicWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.UPDATE,
             PeriodicWorkRequestBuilder<ChangesWorker>(
-                zdata.checkInterval.toLong(),
+                data.checkInterval.toLong(),
                 TimeUnit.HOURS
             )
                 .apply {
@@ -178,12 +169,12 @@ class ZWorkerUtils(private val ctx: Context) {
                             .setRequiredNetworkType(NetworkType.CONNECTED)
                             .build()
                     )
-                    if (zdata.compareChanges && forceDelay) setInitialDelay(3, TimeUnit.MINUTES)
+                    if (data.compareChanges && forceDelay) setInitialDelay(3, TimeUnit.MINUTES)
                 }
                 .build()
         )
 //        Firebase.analytics.logEvent("classesArrayUpdate", Bundle().apply {
-//            putStringArrayList("Klases", ArrayList(zdata.currentClassSet))
+//            putStringArrayList("Klases", ArrayList(data.currentClassSet))
 //        })
     }
 }

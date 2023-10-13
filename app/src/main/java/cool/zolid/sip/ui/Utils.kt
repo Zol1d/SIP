@@ -23,17 +23,17 @@ val Number.toPx
     ).roundToInt()
 
 @SuppressLint("UseCompatLoadingForDrawables") // minSdk is 24 and it is only good if minSdk is 23 or below
-fun Resources.getZDrawable(@DrawableRes id: Int): Drawable = getDrawable(id, newTheme().apply {
+fun Resources.getRDrawable(@DrawableRes id: Int): Drawable = getDrawable(id, newTheme().apply {
     applyStyle(
         R.style.Theme_SIP, false
     )
 })
 
 @ColorInt
-fun Context.getZColor(@ColorRes id: Int) = resources.getZColor(id)
+fun Context.getRColor(@ColorRes id: Int) = resources.getRColor(id)
 
 @ColorInt
-fun Resources.getZColor(@ColorRes id: Int): Int = getColor(id, newTheme().apply {
+fun Resources.getRColor(@ColorRes id: Int): Int = getColor(id, newTheme().apply {
     applyStyle(
         R.style.Theme_SIP, false
     )
@@ -49,7 +49,7 @@ fun List<SpannableString>.join(seperator: String = "\n"): SpannableStringBuilder
 }
 
 fun Spannable.colorizeAll(@ColorRes color: Int, resources: Resources) = setSpan(
-    ForegroundColorSpan(resources.getZColor(color)),
+    ForegroundColorSpan(resources.getRColor(color)),
     0,
     length,
     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE

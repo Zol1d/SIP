@@ -4,7 +4,7 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import cool.zolid.sip.data.ZData
+import cool.zolid.sip.data.Data
 import cool.zolid.sip.worker.ZNotification
 import cool.zolid.sip.worker.containsDate
 import cool.zolid.sip.worker.notify
@@ -13,7 +13,7 @@ class StartupReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != Intent.ACTION_BOOT_COMPLETED) return
         val toRemove = mutableSetOf<ZNotification>()
-        for (notif in ZData(context).savedNotifs) {
+        for (notif in Data(context).savedNotifs) {
             val cdr = containsDate(notif.date)
             if (cdr.any) notify(context, notif.date, notif.main, cdr)
             else {
@@ -23,7 +23,7 @@ class StartupReceiver : BroadcastReceiver() {
                 toRemove.add(notif)
             }
         }
-        if (toRemove.isNotEmpty()) ZData(context).savedNotifs =
-            ZData(context).savedNotifs.apply { removeAll(toRemove) }
+        if (toRemove.isNotEmpty()) Data(context).savedNotifs =
+            Data(context).savedNotifs.apply { removeAll(toRemove) }
     }
 }

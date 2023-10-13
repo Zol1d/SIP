@@ -1,5 +1,6 @@
 package cool.zolid.sip.ui.history
 
+import android.annotation.SuppressLint
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import androidx.fragment.app.Fragment
@@ -9,7 +10,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import cool.zolid.sip.R
 import cool.zolid.sip.data.HistoryChangeEvent
-import cool.zolid.sip.data.ZData
+import cool.zolid.sip.data.Data
 import cool.zolid.sip.ui.colorizeAll
 import cool.zolid.sip.ui.join
 import org.greenrobot.eventbus.EventBus
@@ -48,9 +49,10 @@ class HistoryPagerAdapter(
         )
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun submitList(baseMap: Map<String, Map<String, String>>? = null) {
-        val ccs = ZData(fa).currentClassSet.map { it.lowercase() }
-        items = (baseMap ?: ZData(fa).History().getAll())
+        val ccs = Data(fa).currentClassSet
+        items = (baseMap ?: Data(fa).History().getAll())
             .mapValues { it.value.toMutableMap() }.toList()
             .sortedWith(
                 compareBy { it.first.split('.')[0].toIntOrNull() ?: 0 }).asReversed()

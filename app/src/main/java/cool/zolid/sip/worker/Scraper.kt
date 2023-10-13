@@ -9,13 +9,11 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
 import cool.zolid.sip.R
-import cool.zolid.sip.data.ZData
+import cool.zolid.sip.data.Data
 import cool.zolid.sip.notifs.ButtonReceiver
 import cool.zolid.sip.ui.MainActivity
-import cool.zolid.sip.ui.getZColor
+import cool.zolid.sip.ui.getRColor
 import org.jsoup.Jsoup
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,9 +29,11 @@ fun ContainsDateResult.getFormattedDate(): String {
             today -> {
                 Calendar.getInstance().time
             }
+
             tmrw -> {
                 Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 1) }.time
             }
+
             else -> calculateUntilMonday().time
         }
     )
@@ -78,15 +78,15 @@ fun notify(ctx: Context, data: ZNotification, sticky: Boolean = false) {
         return
     }
     val (date, main, containsDate) = data
-    val zdata = ZData(ctx)
+    val zdata = Data(ctx)
     val notifId = date.split('.')[0].toIntOrNull() ?: nextInt()
     val notif = NotificationCompat.Builder(ctx, "changes").apply {
         setSmallIcon(R.drawable.ic_notif)
-        color = ctx.getZColor(R.color.dark_green)
+        color = ctx.getRColor(R.color.dark_green)
         priority = NotificationCompat.PRIORITY_MAX
         setColorized(true)
         setLights(
-            ctx.getZColor(R.color.dark_green), 1000, 500
+            ctx.getRColor(R.color.dark_green), 1000, 500
         )
         setContentTitle("${if (containsDate.today) "Šodienas" else if (containsDate.tmrw) "Rītdienas" else if (containsDate.monday) "Pirmdienas" else return} izmaiņas ($date)")
         setContentText(main)
@@ -138,10 +138,10 @@ fun errorNotify(
     }
     val notif = NotificationCompat.Builder(ctx, "changes").apply {
         setSmallIcon(R.drawable.ic_notif)
-        color = ctx.getZColor(android.R.color.holo_red_dark)
+        color = ctx.getRColor(android.R.color.holo_red_dark)
         setColorized(true)
         setLights(
-            ctx.getZColor(android.R.color.holo_red_dark), 1000, 500
+            ctx.getRColor(android.R.color.holo_red_dark), 1000, 500
         )
         priority = NotificationCompat.PRIORITY_MAX
         setContentIntent(
@@ -162,7 +162,7 @@ fun errorNotify(
 }
 
 private val String.trim
-    get() = removePrefix(" ").replaceFirstChar { char -> char.uppercaseChar() }.removeSuffix(" ")
+    get() = replaceFirstChar { char -> char.uppercaseChar() }.trim()
 private val dashRegex = Regex("\\s?-\\s?")
 
 fun scrapeChanges(clazzArray: List<String>): MutableMap<String, MutableMap<String, String>> {
@@ -182,14 +182,18 @@ fun scrapeChanges(clazzArray: List<String>): MutableMap<String, MutableMap<Strin
                 date = containsResult.getFormattedDate()
                 dateChanges["Vispārīgi"] =
                     hc.replace(Regex("<strong>.*</strong>").find(hc)!!.value, "")
-                        .replace(dashRegex, "").removePrefix(".")
-                        .replaceFirstChar { it.uppercaseChar() }
+                        .replace(dashRegex, "").removePrefix(".").trim
                 continue
             }
-            try {
-                hc.split(dashRegex)[0].replace(" ", "").lowercase().split(",")
-                    .filter { it.uppercase() in clazzArray }.forEach {
-                        // Append if already in there
+            if (hc.split(dashRegex).size < 2) {
+                try {
+                    dateChanges[dateChanges.keys.last()] += (if (dateChanges[dateChanges.keys.last()].isNullOrBlank()) hc.trim else ", " + hc.trim)
+                } catch (e: NoSuchElementException) {
+                    dateChanges["Vispārīgi"] = hc.trim
+                }
+            } else {
+                hc.split(dashRegex)[0].replace(" ", "").split(",").map { it.uppercase().trim }
+                    .filter { it in clazzArray }.forEach {
                         if (it in dateChanges) {
                             dateChanges[it] += (", " + hc.split(dashRegex).drop(1)
                                 .joinToString(", ").trim)
@@ -197,18 +201,6 @@ fun scrapeChanges(clazzArray: List<String>): MutableMap<String, MutableMap<Strin
                             dateChanges[it] = hc.split(dashRegex).drop(1).joinToString(", ").trim
                         }
                     }
-            } catch (e: IndexOutOfBoundsException) {
-                // Prolly a new line but meant for the last lines class
-                try {
-                    dateChanges[dateChanges.keys.last()] += (", " + hc.trim)
-                } catch (e: NoSuchElementException) {
-                    if ("Vispārīgi" in dateChanges) {
-                        dateChanges["Vispārīgi"] += (" " + hc.trim)
-                    } else {
-                        // No clue what happened to the format if this triggers
-                        Firebase.crashlytics.recordException(Throwable("FormatError"))
-                    }
-                }
             }
         }
         if (!date.isNullOrBlank()) hourlyChanges[date] = dateChanges

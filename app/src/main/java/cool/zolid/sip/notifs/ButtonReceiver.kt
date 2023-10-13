@@ -4,7 +4,7 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import cool.zolid.sip.data.ZData
+import cool.zolid.sip.data.Data
 
 class ButtonReceiver : BroadcastReceiver() {
     companion object {
@@ -12,7 +12,7 @@ class ButtonReceiver : BroadcastReceiver() {
             (ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(
                 id
             )
-            ZData(ctx).savedNotifs = ZData(ctx).savedNotifs.apply {
+            Data(ctx).savedNotifs = Data(ctx).savedNotifs.apply {
                 remove(find { it.date.split('.')[0].toIntOrNull() == id })
             }
         }

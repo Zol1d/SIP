@@ -6,8 +6,8 @@ import android.widget.RelativeLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import cool.zolid.sip.R
 import cool.zolid.sip.data.AllClassesChangeEvent
-import cool.zolid.sip.data.ZData
-import cool.zolid.sip.worker.ZWorkerUtils
+import cool.zolid.sip.data.Data
+import cool.zolid.sip.worker.WorkerUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -18,14 +18,14 @@ class ClazzButtonTable(private val viewgroup: ViewGroup) {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onNewClasses(event: AllClassesChangeEvent) {
+    fun onNewClasses(@Suppress("UNUSED_PARAMETER") event: AllClassesChangeEvent) {
         viewgroup.removeView(viewgroup.findViewById(R.id.clazz_btn_table))
         ClazzButtonTable(viewgroup)
     }
 
     init {
         EventBus.getDefault().register(this)
-        val isWorkScheduled = ZWorkerUtils(viewgroup.context).isWorkScheduled()
+        val isWorkScheduled = WorkerUtils(viewgroup.context).isWorkScheduled()
         val clazzBtnTable = LinearLayout(viewgroup.context).apply {
             id = R.id.clazz_btn_table
             layoutParams = RelativeLayout.LayoutParams(
@@ -37,7 +37,7 @@ class ClazzButtonTable(private val viewgroup: ViewGroup) {
             orientation = LinearLayout.VERTICAL
         }
         val clazzmap = mutableMapOf<String, MutableList<String>>()
-        ZData(viewgroup.context).allClassList.forEach {
+        Data(viewgroup.context).allClassList.forEach {
             if (clazzmap[it.split('.')[0]] == null) {
                 clazzmap[it.split('.')[0]] = mutableListOf(it.split('.')[1])
             } else {
@@ -45,10 +45,10 @@ class ClazzButtonTable(private val viewgroup: ViewGroup) {
             }
         }
 
-        val onColor = viewgroup.resources.getZColor(
+        val onColor = viewgroup.resources.getRColor(
             R.color.dark_green
         )
-        val offColor = viewgroup.resources.getZColor(
+        val offColor = viewgroup.resources.getRColor(
             R.color.yellow
         )
         for ((clazzesNum, clazzes) in clazzmap) {

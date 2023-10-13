@@ -6,7 +6,7 @@ import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import com.google.gson.reflect.TypeToken
 import cool.zolid.sip.R
-import cool.zolid.sip.data.ZPrefVars.Companion.toMap
+import cool.zolid.sip.data.PrefVars.Companion.toMap
 import cool.zolid.sip.worker.ZNotification
 import cool.zolid.sip.worker.lvDateFmt
 import org.greenrobot.eventbus.EventBus
@@ -15,7 +15,7 @@ import java.text.ParseException
 import java.util.*
 
 
-class ZData(ctx: Context) {
+class Data(ctx: Context) {
     private val prefs = ctx.getSharedPreferences("hourlyChanges", Context.MODE_PRIVATE)
     private val eventBus = EventBus.getDefault()
 
@@ -72,7 +72,7 @@ class ZData(ctx: Context) {
         Firebase.crashlytics.setCustomKey(it.key, it.value.toString())
     }
 
-    private val ZVar = ZPrefVars(ctx)
+    private val ZVar = PrefVars(ctx)
     var compareChanges by ZVar.Bool(true)
     var errored by ZVar.Bool(false)
     var generalChanges by ZVar.Bool(true)

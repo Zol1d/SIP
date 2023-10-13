@@ -12,7 +12,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.button.MaterialButton
 import cool.zolid.sip.R
 import cool.zolid.sip.data.HistoryChangeEvent
-import cool.zolid.sip.data.ZData
+import cool.zolid.sip.data.Data
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -24,7 +24,7 @@ class SliderButton(
     pos: Int
 ) : MaterialButton(fragment.requireContext()),
     View.OnClickListener {
-    private val zdata = ZData(context)
+    private val data = Data(context)
     private val pagerAdapter =
         fragment.requireActivity().findViewById<ViewPager2>(R.id.pager).adapter!!
 
@@ -34,11 +34,11 @@ class SliderButton(
 
     companion object {
         fun canSliderButtonBeShown(
-            zdata: ZData,
+            data: Data,
             newHistory: Map<String, Map<String, String>>? = null
         ): Boolean {
-            val ccs = zdata.currentClassSet.map { it.lowercase() }
-            return zdata.historyPane && (newHistory ?: zdata.History()
+            val ccs = data.currentClassSet
+            return data.historyPane && (newHistory ?: data.History()
                 .getAll()).values.any { it.keys.any { it in ccs } }
         }
     }
@@ -58,13 +58,13 @@ class SliderButton(
         }
 
     fun refreshVisibility(newHistory: Map<String, Map<String, String>>? = null) {
-        if (zdata.historyPane) {
+        if (data.historyPane) {
             visibility = VISIBLE
         } else {
             visibility = GONE
             return
         }
-        val canBeShown = canSliderButtonBeShown(zdata, newHistory)
+        val canBeShown = canSliderButtonBeShown(data, newHistory)
         if (canBeShown && isDisabled) {
             isDisabled = false
             updatePager(true)
@@ -101,8 +101,8 @@ class SliderButton(
             "No tavām izvēlētajām klasēm nevienai nav vēsture",
             Toast.LENGTH_LONG
         ).show()
-        val newToggle = !zdata.lastSliderPageMain
-        zdata.lastSliderPageMain = newToggle
+        val newToggle = !data.lastSliderPageMain
+        data.lastSliderPageMain = newToggle
         fragment.requireActivity().findViewById<ViewPager2>(R.id.pager).currentItem =
             if (newToggle) 0 else 1
     }

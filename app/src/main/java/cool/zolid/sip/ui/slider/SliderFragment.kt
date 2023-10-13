@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import cool.zolid.sip.R
 import cool.zolid.sip.ui.ClazzButtonTable
-import cool.zolid.sip.ui.getZDrawable
+import cool.zolid.sip.ui.getRDrawable
 import cool.zolid.sip.ui.history.HistoryPagerAdapter
 import cool.zolid.sip.ui.history.HistoryPaneAdapter
 
@@ -31,7 +31,7 @@ class SliderFragment(private val pos: Int, private val openHistoryDate: String?)
             }
             addView(RecyclerView(requireContext()).apply {
                 layoutManager = LinearLayoutManager(requireContext())
-                background = resources.getZDrawable(R.drawable.green_border_no_bottom)
+                background = resources.getRDrawable(R.drawable.green_border_no_bottom)
                 adapter = HistoryPaneAdapter(requireActivity(), openHistoryDate)
                 id = R.id.history_pane
                 addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
@@ -44,7 +44,7 @@ class SliderFragment(private val pos: Int, private val openHistoryDate: String?)
                     )
                     adapter = HistoryPagerAdapter(requireActivity())
                     id = R.id.history_details_fragment
-                    background = resources.getZDrawable(R.drawable.module_background)
+                    background = resources.getRDrawable(R.drawable.module_background)
                     registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                         override fun onPageSelected(position: Int) {
                             super.onPageSelected(position)

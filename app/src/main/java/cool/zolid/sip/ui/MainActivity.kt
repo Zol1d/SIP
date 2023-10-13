@@ -22,6 +22,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.analytics.ktx.analytics
@@ -34,17 +35,17 @@ import com.google.firebase.remoteconfig.ktx.remoteConfig
 import cool.zolid.sip.BuildConfig
 import cool.zolid.sip.R
 import cool.zolid.sip.data.AllClassesChangeEvent
-import cool.zolid.sip.data.ZData
+import cool.zolid.sip.data.Data
 import cool.zolid.sip.ui.slider.SliderPagerAdapter
-import cool.zolid.sip.worker.ZWorkerUtils
+import cool.zolid.sip.worker.WorkerUtils
 import org.greenrobot.eventbus.EventBus
 import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var remoteConfig: FirebaseRemoteConfig
-    private lateinit var workMgr: ZWorkerUtils
-    private lateinit var zdata: ZData
+    private lateinit var workMgr: WorkerUtils
+    private lateinit var zdata: Data
 
     private fun displayAuthFail() {
         setContentView(R.layout.error)
@@ -70,8 +71,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         remoteConfig = Firebase.remoteConfig
-        workMgr = ZWorkerUtils(applicationContext)
-        zdata = ZData(applicationContext)
+        workMgr = WorkerUtils(applicationContext)
+        zdata = Data(applicationContext)
 
 
         val appUpdateManager = AppUpdateManagerFactory.create(this)
@@ -82,8 +83,8 @@ class MainActivity : AppCompatActivity() {
             ) {
                 appUpdateManager.startUpdateFlowForResult(
                     appUpdateInfo,
-                    if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) AppUpdateType.IMMEDIATE else AppUpdateType.FLEXIBLE,
                     this,
+                    AppUpdateOptions.defaultOptions(if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) AppUpdateType.IMMEDIATE else AppUpdateType.FLEXIBLE),
                     100
                 )
             }
@@ -139,7 +140,7 @@ class MainActivity : AppCompatActivity() {
                 "changes", "Stundu izmaiņas", NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-                lightColor = resources.getZColor(R.color.dark_green)
+                lightColor = resources.getRColor(R.color.dark_green)
                 enableLights(true)
                 enableVibration(true)
             }
@@ -157,7 +158,7 @@ class MainActivity : AppCompatActivity() {
         val schoolyear = ((if (cal.get(Calendar.DAY_OF_YEAR) > 244) cal.get(Calendar.YEAR) + 1 else cal.get(
             Calendar.YEAR
         )) - 2015)
-        activView.findViewById<TextView>(R.id.creditText).text = if (schoolyear > 9) "Kodējis Matīss Lazdiņš Rīgas 64. Vidusskolai (7. klase, 2021)" else "Kodējis Matīss no ${schoolyear}.D"
+        activView.findViewById<TextView>(R.id.creditText).text = if (schoolyear > 9) "Kodējis Matīss Lazdiņš (7.D klase, 2021)" else "Kodējis Matīss no ${schoolyear}.D"
         activView.findViewById<ViewPager2>(R.id.pager).let {
             it.adapter = SliderPagerAdapter(
                 this, intent.getStringExtra(
@@ -190,7 +191,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("BatteryLife")
     override fun onResume() {
         super.onResume()
-        val isWorkScheduled = ZWorkerUtils(applicationContext).isWorkScheduled()
+        val isWorkScheduled = WorkerUtils(applicationContext).isWorkScheduled()
         findViewById<TextView>(R.id.chooseTxt)?.text =
             if (isWorkScheduled) "Ieslēgts" else "Izvēlieties savu klasi/-es:"
         if (!(getSystemService(POWER_SERVICE) as PowerManager).isIgnoringBatteryOptimizations(

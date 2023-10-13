@@ -6,7 +6,7 @@ plugins {
     id 'kotlin-kapt'
 }
 android {
-    compileSdk 33
+    compileSdk 34
     def versionPropsFile = file('version.properties')
     if (versionPropsFile.canRead()) {
         Properties versionProps = new Properties()
@@ -23,7 +23,7 @@ android {
             applicationId "cool.zolid.sip"
             minSdk 24
             targetSdk 33
-            versionName "1.7.4"
+            versionName "1.8.0"
         }
     } else {
         throw new Exception("Could not read version.properties!")
@@ -56,26 +56,26 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.0'
-    implementation 'com.google.android.material:material:1.7.0'
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation "androidx.work:work-runtime-ktx:2.7.1"
-    implementation "androidx.work:work-gcm:2.7.1"
-    implementation 'org.jsoup:jsoup:1.15.3'
+    implementation "androidx.work:work-runtime-ktx:2.8.1"
+    implementation "androidx.work:work-gcm:2.8.1"
+    implementation 'org.jsoup:jsoup:1.16.1'
     implementation platform('com.google.firebase:firebase-bom:28.4.2')
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-messaging-ktx'
     implementation 'com.google.firebase:firebase-database-ktx'
     implementation 'com.google.firebase:firebase-config-ktx'
-    implementation 'com.google.code.gson:gson:2.9.0'
-    implementation "androidx.fragment:fragment-ktx:1.5.5"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation "androidx.fragment:fragment-ktx:1.6.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"
     implementation "org.greenrobot:eventbus:3.3.1"
     kapt "org.greenrobot:eventbus-annotation-processor:3.3.1"
-    implementation 'com.google.android.play:app-update:2.0.1'
-    implementation 'com.google.android.play:app-update-ktx:2.0.1'
+    implementation 'com.google.android.play:app-update:2.1.0'
+    implementation 'com.google.android.play:app-update-ktx:2.1.0'
 }
 
 kapt {
