@@ -5,7 +5,7 @@ Projekts tika uzsākts 2021. gadā, lai stundu izmaiņu uzziņu padrītu ērtāk
 Vēlāk 2024. gadā noņemts no Play Store.
 
 ### Projekta statuss
-Kopš 2023. gada oktobra vairs netiek uzturēts. Šobrīd, 2025. gadā, principā vēl strādā.
+Kopš 2023. gada oktobra vairs netiek uzturēts. Šobrīd, 2026. gadā, principā vēl strādā.
 
 XML UI sistēma, var teikt, ir novecojusi, kā arī vēlreiz publicēt Google Play būtu šausmas, tādēļ paturu tiaki savai lietošanai, kā arī, protams, ja kādam ir vēlme uzbūvēt lokāli, visam principā būtu jāstrādā.
 Situācijā, ja klases ir nav atjaunotas, vai kaut kas nedarbojas, viens no iemesliem varētu būt Firebase projekts, ko es visticamāk neatjaunoju. Šādā situācijā tev būs jauztaisa savs Firebase projekts ar Realtime Database funkciju ieslēgtu, jānomaina google-services.json fails uz savējo un failā MainActivity.kt jānomaina Realtime Database links. Datubāzes struktūra ir šāda:
